@@ -3,9 +3,11 @@ package br.com.dbserver.desafio.votacao.controller;
 import br.com.dbserver.desafio.votacao.domain.pautas.DadosDetalhamentoPauta;
 import br.com.dbserver.desafio.votacao.domain.pautas.PautaRepository;
 import br.com.dbserver.desafio.votacao.domain.sessoes.SessaoRepository;
+import br.com.dbserver.desafio.votacao.domain.usuarios.DadosDetalhamentoUsuario;
 import br.com.dbserver.desafio.votacao.infra.ValidarCpf;
 import br.com.dbserver.desafio.votacao.domain.usuarios.UsuarioRepository;
 import br.com.dbserver.desafio.votacao.domain.votacao.*;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -94,16 +96,14 @@ public class VotacaoController {
         return ResponseEntity.ok(page);
     }
 
-    @GetMapping("/{idPauta}")
-    public ResponseEntity detalhar(@PathVariable Long idPauta){
-        List<Votacao> votacoes = votacaoRepository.findVotosPorPauta(idPauta);
-
-        if (votacoes.isEmpty()) {
+    @GetMapping("/{id}")
+    public ResponseEntity detalhar(@PathVariable Long id) {
+        try {
+            var votacao = votacaoRepository.getReferenceById(id);
+            return ResponseEntity.ok(new DadosDetalhamentoVotacao(votacao));
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
-
-        // Se houver votações, você pode retornar diretamente a lista de votações
-        return ResponseEntity.ok(votacoes);
     }
 
     @GetMapping("/total-votos/{idPauta}")

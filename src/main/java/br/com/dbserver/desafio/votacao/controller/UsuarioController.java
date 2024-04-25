@@ -1,10 +1,12 @@
 package br.com.dbserver.desafio.votacao.controller;
 
+import br.com.dbserver.desafio.votacao.domain.votacao.DadosDetalhamentoVotacao;
 import br.com.dbserver.desafio.votacao.infra.ValidarCpf;
 import br.com.dbserver.desafio.votacao.domain.usuarios.DadosCadastroUsuario;
 import br.com.dbserver.desafio.votacao.domain.usuarios.DadosDetalhamentoUsuario;
 import br.com.dbserver.desafio.votacao.domain.usuarios.Usuario;
 import br.com.dbserver.desafio.votacao.domain.usuarios.UsuarioRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -57,7 +59,11 @@ public class UsuarioController {
 
     @GetMapping("/{id}")
     public ResponseEntity detalhar(@PathVariable Long id){
-        var usuario = repository.getReferenceById(id);
-        return ResponseEntity.ok(new DadosDetalhamentoUsuario(usuario));
+        try {
+            var usuario = repository.getReferenceById(id);
+            return ResponseEntity.ok(new DadosDetalhamentoUsuario(usuario));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

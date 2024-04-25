@@ -4,6 +4,8 @@ import br.com.dbserver.desafio.votacao.domain.pautas.DadosCadastroPauta;
 import br.com.dbserver.desafio.votacao.domain.pautas.DadosDetalhamentoPauta;
 import br.com.dbserver.desafio.votacao.domain.pautas.Pauta;
 import br.com.dbserver.desafio.votacao.domain.pautas.PautaRepository;
+import br.com.dbserver.desafio.votacao.domain.usuarios.DadosDetalhamentoUsuario;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -45,7 +47,11 @@ public class PautaController {
 
     @GetMapping("/{id}")
     public ResponseEntity detalhar(@PathVariable Long id){
-        var pauta = repository.getReferenceById(id);
-        return ResponseEntity.ok(new DadosDetalhamentoPauta(pauta));
+        try {
+            var pauta = repository.getReferenceById(id);
+            return ResponseEntity.ok(new DadosDetalhamentoPauta(pauta));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
