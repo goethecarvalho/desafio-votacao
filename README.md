@@ -114,4 +114,40 @@ A tela do tipo SELECAO exibe uma lista de opções para que o usuário.
 
 O aplicativo envia uma requisição POST para a url informada e com o body definido pelo objeto dentro de cada item da lista de seleção, quando o mesmo é acionado, semelhando ao funcionamento dos botões da tela FORMULARIO.
 
+## Execução
+
+A configuração da conexão com a base de dados encontra-se no arquivo application.properties, o banco utilizado foi o postgres. As tabelas serão criadas na inicialização da aplicação através do flyway.
+
+Formato do Json:
+
+-- usuário
+{
+  "nome": "Francisco da Silva",
+  "cpf": "028.675.543-22"
+}
+
+-- pauta
+{
+  "descricao": "Votação para eleição do novo conselho"
+}
+
+-- votação
+{
+    "idPauta": 1,
+    "idUsuario": 3,
+    "voto": "NAO",
+    "dataHoraVotacao": "2024-04-25T10:45"
+}
+
+-- sessão
+{
+    "idPauta": 1,
+    "dataHoraInicio": "2024-04-25T10:00",
+    "dataHoraFim": "2024-04-25T10:30"
+}
+
+Link para testar os endpoints: http://localhost:8080/swagger-ui/index.html#/
+
 # desafio-votacao
+
+

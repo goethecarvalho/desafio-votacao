@@ -20,7 +20,7 @@ public class EfetuarVotacao {
 
         var usuario = usuarioRepository.getReferenceById(dados.idUsuario());
 
-        var votoEfetuado = new Votacao(null, usuario, pauta, dados.voto());
+        var votoEfetuado = new Votacao(null, usuario, pauta, dados.voto(), dados.dataHoraVotacao());
 
         return votoEfetuado;
     }

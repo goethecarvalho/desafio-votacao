@@ -1,7 +1,6 @@
-package br.com.dbserver.desafio.votacao.domain.votacao;
+package br.com.dbserver.desafio.votacao.domain.sessoes;
 
 import br.com.dbserver.desafio.votacao.domain.pautas.Pauta;
-import br.com.dbserver.desafio.votacao.domain.usuarios.Usuario;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -10,28 +9,25 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Table(name = "votacao")
-@Entity(name = "Votacao")
+@Table(name = "sessao")
+@Entity(name = "Sessao")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class Votacao {
+public class Sessao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id")
-    private Usuario usuario;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pauta_id")
     private Pauta pauta;
 
-    private String voto;
+    private LocalDateTime dataHoraInicio;
 
-    private LocalDateTime dataHoraVotacao;
+    private LocalDateTime dataHoraFim;
+
 
 }

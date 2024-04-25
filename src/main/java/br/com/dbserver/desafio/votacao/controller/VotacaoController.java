@@ -1,6 +1,8 @@
 package br.com.dbserver.desafio.votacao.controller;
 
+import br.com.dbserver.desafio.votacao.domain.pautas.DadosDetalhamentoPauta;
 import br.com.dbserver.desafio.votacao.domain.pautas.PautaRepository;
+import br.com.dbserver.desafio.votacao.domain.sessoes.SessaoRepository;
 import br.com.dbserver.desafio.votacao.infra.ValidarCpf;
 import br.com.dbserver.desafio.votacao.domain.usuarios.UsuarioRepository;
 import br.com.dbserver.desafio.votacao.domain.votacao.*;
@@ -34,6 +36,9 @@ public class VotacaoController {
     @Autowired
     private EfetuarVotacao efetuarVotacao;
 
+    @Autowired
+    private SessaoRepository sessaoRepository;
+
     @PostMapping
     @Transactional
     public ResponseEntity cadastrar(@RequestBody @Valid DadosCadastroVotacao dados, UriComponentsBuilder uriBuilder){
@@ -54,10 +59,16 @@ public class VotacaoController {
         if (!votoDuplicado) {
             Votacao votoEfetuado = efetuarVotacao.votar(dados);
 
-            votacaoRepository.save(votoEfetuado);
-            var uri = uriBuilder.path("/votacao/{id}").buildAndExpand(votoEfetuado.getId()).toUri();
+            Boolean sessaoAberta = sessaoRepository.validaVotoByPautaHorario(dados.idPauta(), dados.dataHoraVotacao());
 
-            return ResponseEntity.created(uri).body(new DadosDetalhamentoVotacao(votoEfetuado));
+            if (sessaoAberta){
+                votacaoRepository.save(votoEfetuado);
+                var uri = uriBuilder.path("/votacao/{id}").buildAndExpand(votoEfetuado.getId()).toUri();
+
+                return ResponseEntity.created(uri).body(new DadosDetalhamentoVotacao(votoEfetuado));
+            }else{
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("{'mensagem': 'Sessão encerrada'}");
+            }
         } else {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("{'mensagem': 'Voto já computado'}");
         }
@@ -69,7 +80,7 @@ public class VotacaoController {
             return ResponseEntity.badRequest().body("O idPauta deve estar preenchido.");
         }
         if (dados.idUsuario() == null) {
-            return ResponseEntity.badRequest().body("O idUsuarioo deve estar preenchido.");
+            return ResponseEntity.badRequest().body("O idUsuario deve estar preenchido.");
         }
         if (dados.voto() == null || dados.voto().isEmpty()) {
             return ResponseEntity.badRequest().body("O voto deve estar preenchido.");
@@ -81,6 +92,18 @@ public class VotacaoController {
     public ResponseEntity<Page<DadosDetalhamentoVotacao>> listar(@PageableDefault(size = 10, sort = {"id"}) Pageable paginacao) {
         var page = votacaoRepository.findAll(paginacao).map(DadosDetalhamentoVotacao::new);
         return ResponseEntity.ok(page);
+    }
+
+    @GetMapping("/{idPauta}")
+    public ResponseEntity detalhar(@PathVariable Long idPauta){
+        List<Votacao> votacoes = votacaoRepository.findVotosPorPauta(idPauta);
+
+        if (votacoes.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Se houver votações, você pode retornar diretamente a lista de votações
+        return ResponseEntity.ok(votacoes);
     }
 
     @GetMapping("/total-votos/{idPauta}")
