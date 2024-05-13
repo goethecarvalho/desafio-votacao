@@ -1,10 +1,11 @@
 package br.com.dbserver.desafio.votacao.controller;
 
-import br.com.dbserver.desafio.votacao.domain.pautas.DadosCadastroPauta;
-import br.com.dbserver.desafio.votacao.domain.pautas.DadosDetalhamentoPauta;
-import br.com.dbserver.desafio.votacao.domain.pautas.Pauta;
-import br.com.dbserver.desafio.votacao.domain.pautas.PautaRepository;
-import br.com.dbserver.desafio.votacao.domain.usuarios.DadosDetalhamentoUsuario;
+import br.com.dbserver.desafio.votacao.domain.pautas.service.PautaService;
+import br.com.dbserver.desafio.votacao.domain.pautas.vo.DadosCadastroPauta;
+import br.com.dbserver.desafio.votacao.domain.pautas.vo.DadosDetalhamentoPauta;
+import br.com.dbserver.desafio.votacao.domain.pautas.entity.Pauta;
+import br.com.dbserver.desafio.votacao.domain.pautas.repository.PautaRepository;
+import br.com.dbserver.desafio.votacao.domain.usuarios.vo.DadosDetalhamentoUsuario;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,36 +23,26 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class PautaController {
 
     @Autowired
-    private PautaRepository repository;
+    private PautaService service;
 
     @PostMapping
     @Transactional
     public ResponseEntity cadastrar(@RequestBody @Valid DadosCadastroPauta dados, UriComponentsBuilder uriBuilder){
 
-        if (dados.descricao() == null || dados.descricao().isEmpty()) {
-            return ResponseEntity.badRequest().body("A descrição da pauta não pode estar vazia.");
-        }
-
-        var pauta = new Pauta(dados);
-        repository.save(pauta);
-        var uri = uriBuilder.path("/pautas/{id}").buildAndExpand(pauta.getId()).toUri();
-
-        return ResponseEntity.created(uri).body(new DadosDetalhamentoPauta(pauta));
+        var dadosPautaCadastrada = service.cadastrarPauta(dados);
+        var uri = uriBuilder.path("usuarios/{id}").buildAndExpand(dadosPautaCadastrada.id()).toUri();
+        return ResponseEntity.created(uri).body(dadosPautaCadastrada);
     }
 
     @GetMapping
     public ResponseEntity<Page<DadosDetalhamentoPauta>> listar(@PageableDefault(size = 10, sort = {"descricao"}) Pageable paginacao) {
-        var page = repository.findAll(paginacao).map(DadosDetalhamentoPauta::new);
-        return ResponseEntity.ok(page);
+
+        return service.listar(paginacao);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity detalhar(@PathVariable Long id){
-        try {
-            var pauta = repository.getReferenceById(id);
-            return ResponseEntity.ok(new DadosDetalhamentoPauta(pauta));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<DadosDetalhamentoPauta> detalhar(@PathVariable Long id) {
+        var pauta = service.detalhar(id);
+        return ResponseEntity.ok(pauta);
     }
 }

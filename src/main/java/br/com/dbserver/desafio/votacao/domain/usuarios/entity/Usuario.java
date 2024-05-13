@@ -1,5 +1,7 @@
-package br.com.dbserver.desafio.votacao.domain.usuarios;
+package br.com.dbserver.desafio.votacao.domain.usuarios.entity;
 
+import br.com.dbserver.desafio.votacao.domain.usuarios.vo.DadosCadastroUsuario;
+import br.com.dbserver.desafio.votacao.domain.usuarios.vo.UsuarioStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -19,6 +21,9 @@ public class Usuario {
     private Long id;
     private String nome;
     private String cpf;
+
+    /*@Enumerated(EnumType.STRING)
+    private UsuarioStatus status;*/
 
     public Usuario(DadosCadastroUsuario dados) {
         this.nome = dados.nome();

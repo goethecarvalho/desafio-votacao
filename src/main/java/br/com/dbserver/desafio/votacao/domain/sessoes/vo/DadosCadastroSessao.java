@@ -1,4 +1,4 @@
-package br.com.dbserver.desafio.votacao.domain.sessoes;
+package br.com.dbserver.desafio.votacao.domain.sessoes.vo;
 
 import java.time.LocalDateTime;
 

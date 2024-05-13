@@ -1,12 +1,16 @@
 package br.com.dbserver.desafio.votacao.controller;
 
-import br.com.dbserver.desafio.votacao.domain.pautas.DadosDetalhamentoPauta;
-import br.com.dbserver.desafio.votacao.domain.pautas.PautaRepository;
-import br.com.dbserver.desafio.votacao.domain.sessoes.SessaoRepository;
-import br.com.dbserver.desafio.votacao.domain.usuarios.DadosDetalhamentoUsuario;
-import br.com.dbserver.desafio.votacao.infra.ValidarCpf;
-import br.com.dbserver.desafio.votacao.domain.usuarios.UsuarioRepository;
-import br.com.dbserver.desafio.votacao.domain.votacao.*;
+import br.com.dbserver.desafio.votacao.domain.sessoes.service.SessaoService;
+import br.com.dbserver.desafio.votacao.domain.sessoes.vo.DadosDetalhamentoSessao;
+import br.com.dbserver.desafio.votacao.domain.usuarios.vo.DadosDetalhamentoUsuario;
+import br.com.dbserver.desafio.votacao.domain.votacao.entity.Votacao;
+import br.com.dbserver.desafio.votacao.domain.pautas.repository.PautaRepository;
+import br.com.dbserver.desafio.votacao.domain.sessoes.repository.SessaoRepository;
+import br.com.dbserver.desafio.votacao.domain.usuarios.repository.UsuarioRepository;
+import br.com.dbserver.desafio.votacao.domain.votacao.repository.VotacaoRepository;
+import br.com.dbserver.desafio.votacao.domain.votacao.vo.DadosCadastroVotacao;
+import br.com.dbserver.desafio.votacao.domain.votacao.vo.DadosDetalhamentoVotacao;
+import br.com.dbserver.desafio.votacao.domain.votacao.service.VotacaoService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,10 +40,10 @@ public class VotacaoController {
     private PautaRepository pautaRepository;
 
     @Autowired
-    private EfetuarVotacao efetuarVotacao;
+    private VotacaoService votacaoService;
 
     @Autowired
-    private SessaoRepository sessaoRepository;
+    private SessaoService sessaoService;
 
     @PostMapping
     @Transactional
@@ -59,9 +63,9 @@ public class VotacaoController {
         Boolean votoDuplicado = votacaoRepository.findVotoByUsuarioPauta(dados.idUsuario(), dados.idPauta());
 
         if (!votoDuplicado) {
-            Votacao votoEfetuado = efetuarVotacao.votar(dados);
+            Votacao votoEfetuado = votacaoService.votar(dados);
 
-            Boolean sessaoAberta = sessaoRepository.validaVotoByPautaHorario(dados.idPauta(), dados.dataHoraVotacao());
+            Boolean sessaoAberta = sessaoService.validaVotoByPautaHorario(dados.idPauta(), dados.dataHoraVotacao());
 
             if (sessaoAberta){
                 votacaoRepository.save(votoEfetuado);
@@ -91,24 +95,19 @@ public class VotacaoController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<DadosDetalhamentoVotacao>> listar(@PageableDefault(size = 10, sort = {"id"}) Pageable paginacao) {
-        var page = votacaoRepository.findAll(paginacao).map(DadosDetalhamentoVotacao::new);
-        return ResponseEntity.ok(page);
+    public ResponseEntity<Page<DadosDetalhamentoSessao>> listar(@PageableDefault(size = 10, sort = {"nome"}) Pageable paginacao) {
+        return votacaoService.listar(paginacao);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity detalhar(@PathVariable Long id) {
-        try {
-            var votacao = votacaoRepository.getReferenceById(id);
-            return ResponseEntity.ok(new DadosDetalhamentoVotacao(votacao));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<DadosDetalhamentoSessao> detalhar(@PathVariable Long id) {
+        var sessao = votacaoService.detalhar(id);
+        return ResponseEntity.ok(sessao);
     }
 
     @GetMapping("/total-votos/{idPauta}")
     public ResponseEntity<List<Object[]>> totalVotos(@PathVariable Long idPauta) {
-        List<Object[]> totalVotos = votacaoRepository.countTotalVotosByPauta(idPauta);
+        List<Object[]> totalVotos = votacaoService.countTotalVotosByPauta(idPauta);
         return ResponseEntity.ok(totalVotos);
     }
 

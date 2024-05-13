@@ -1,6 +1,7 @@
-package br.com.dbserver.desafio.votacao.domain.sessoes;
+package br.com.dbserver.desafio.votacao.domain.sessoes.entity;
 
-import br.com.dbserver.desafio.votacao.domain.pautas.Pauta;
+import br.com.dbserver.desafio.votacao.domain.pautas.entity.Pauta;
+import br.com.dbserver.desafio.votacao.domain.sessoes.vo.DadosCadastroSessao;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -30,4 +31,6 @@ public class Sessao {
     private LocalDateTime dataHoraFim;
 
 
+    public Sessao(DadosCadastroSessao dados) {
+    }
 }

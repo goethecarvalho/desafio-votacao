@@ -1,5 +1,6 @@
-package br.com.dbserver.desafio.votacao.domain.votacao;
+package br.com.dbserver.desafio.votacao.domain.votacao.repository;
 
+import br.com.dbserver.desafio.votacao.domain.votacao.entity.Votacao;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

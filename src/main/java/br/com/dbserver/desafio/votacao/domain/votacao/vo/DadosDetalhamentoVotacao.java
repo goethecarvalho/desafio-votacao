@@ -1,4 +1,6 @@
-package br.com.dbserver.desafio.votacao.domain.votacao;
+package br.com.dbserver.desafio.votacao.domain.votacao.vo;
+
+import br.com.dbserver.desafio.votacao.domain.votacao.entity.Votacao;
 
 import java.time.LocalDateTime;
 

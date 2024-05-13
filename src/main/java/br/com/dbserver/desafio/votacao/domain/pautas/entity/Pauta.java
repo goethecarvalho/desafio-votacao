@@ -1,5 +1,6 @@
-package br.com.dbserver.desafio.votacao.domain.pautas;
+package br.com.dbserver.desafio.votacao.domain.pautas.entity;
 
+import br.com.dbserver.desafio.votacao.domain.pautas.vo.DadosCadastroPauta;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
