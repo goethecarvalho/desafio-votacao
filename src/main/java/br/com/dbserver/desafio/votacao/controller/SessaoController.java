@@ -1,6 +1,8 @@
 package br.com.dbserver.desafio.votacao.controller;
 
+import br.com.dbserver.desafio.votacao.domain.pautas.entity.Pauta;
 import br.com.dbserver.desafio.votacao.domain.pautas.service.PautaService;
+import br.com.dbserver.desafio.votacao.domain.pautas.vo.DadosDetalhamentoPauta;
 import br.com.dbserver.desafio.votacao.domain.sessoes.service.SessaoService;
 import br.com.dbserver.desafio.votacao.domain.sessoes.vo.DadosCadastroSessao;
 import br.com.dbserver.desafio.votacao.domain.sessoes.vo.DadosDetalhamentoSessao;
@@ -28,8 +30,8 @@ public class SessaoController {
     @PostMapping
     @Transactional
     public ResponseEntity cadastrar(@RequestBody @Valid DadosCadastroSessao dados, UriComponentsBuilder uriBuilder){
-
-        var dadosSessaoCadastrada = sessaoService.cadastrarSessao(dados);
+        DadosDetalhamentoPauta pauta = pautaService.detalhar(dados.idPauta());
+        var dadosSessaoCadastrada = sessaoService.cadastrarSessao(dados, pauta);
         var uri = uriBuilder.path("usuarios/{id}").buildAndExpand(dadosSessaoCadastrada.id()).toUri();
         return ResponseEntity.created(uri).body(dadosSessaoCadastrada);
     }

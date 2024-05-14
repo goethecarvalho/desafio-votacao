@@ -46,3 +46,4 @@ public class PautaService {
         return new DadosDetalhamentoPauta(pauta);
     }
 }
+

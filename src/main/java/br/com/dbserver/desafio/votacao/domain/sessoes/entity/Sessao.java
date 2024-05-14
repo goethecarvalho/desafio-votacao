@@ -1,6 +1,7 @@
 package br.com.dbserver.desafio.votacao.domain.sessoes.entity;
 
 import br.com.dbserver.desafio.votacao.domain.pautas.entity.Pauta;
+import br.com.dbserver.desafio.votacao.domain.pautas.vo.DadosDetalhamentoPauta;
 import br.com.dbserver.desafio.votacao.domain.sessoes.vo.DadosCadastroSessao;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,5 +33,14 @@ public class Sessao {
 
 
     public Sessao(DadosCadastroSessao dados) {
+        this.dataHoraInicio = dados.dataHoraInicio();
+        this.dataHoraFim = dados.dataHoraFim();
+        //this.pauta = dados.idPauta();
+    }
+
+    public Sessao(DadosCadastroSessao dados, Pauta pauta) {
+        this.dataHoraInicio = dados.dataHoraInicio();
+        this.dataHoraFim = dados.dataHoraFim();
+        this.pauta = pauta;
     }
 }

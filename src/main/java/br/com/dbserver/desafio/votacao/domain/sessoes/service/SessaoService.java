@@ -1,7 +1,9 @@
 package br.com.dbserver.desafio.votacao.domain.sessoes.service;
 
 import br.com.dbserver.desafio.votacao.domain.RegraDeNegocioException;
+import br.com.dbserver.desafio.votacao.domain.pautas.entity.Pauta;
 import br.com.dbserver.desafio.votacao.domain.pautas.repository.PautaRepository;
+import br.com.dbserver.desafio.votacao.domain.pautas.vo.DadosDetalhamentoPauta;
 import br.com.dbserver.desafio.votacao.domain.sessoes.repository.SessaoRepository;
 import br.com.dbserver.desafio.votacao.domain.sessoes.vo.DadosCadastroSessao;
 import br.com.dbserver.desafio.votacao.domain.sessoes.entity.Sessao;
@@ -27,7 +29,7 @@ public class SessaoService {
     @Autowired
     private VotacaoRepository votacaoRepository;
 
-    public DadosDetalhamentoSessao cadastrarSessao(DadosCadastroSessao dados) {
+    public DadosDetalhamentoSessao cadastrarSessao(DadosCadastroSessao dados, DadosDetalhamentoPauta pauta) {
 
         if(!pautaRepository.existsById(dados.idPauta())){
             throw new RegraDeNegocioException("Pauta não cadastrada!");
@@ -42,7 +44,9 @@ public class SessaoService {
             throw new RegraDeNegocioException("Sessão já cadastrada");
         }
 
-        var sessao = new Sessao(dados);
+        Pauta pautaDados = new Pauta(pauta);
+
+        var sessao = new Sessao(dados, pautaDados);
 
         sessaoRepository.save(sessao);
 

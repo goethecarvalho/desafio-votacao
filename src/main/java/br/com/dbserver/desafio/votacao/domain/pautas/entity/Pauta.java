@@ -1,6 +1,7 @@
 package br.com.dbserver.desafio.votacao.domain.pautas.entity;
 
 import br.com.dbserver.desafio.votacao.domain.pautas.vo.DadosCadastroPauta;
+import br.com.dbserver.desafio.votacao.domain.pautas.vo.DadosDetalhamentoPauta;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -21,6 +22,11 @@ public class Pauta {
     private String descricao;
 
     public Pauta(DadosCadastroPauta dados) {
+        this.descricao = dados.descricao();
+    }
+
+    public Pauta(DadosDetalhamentoPauta dados) {
+        this.id = dados.id();
         this.descricao = dados.descricao();
     }
 }
