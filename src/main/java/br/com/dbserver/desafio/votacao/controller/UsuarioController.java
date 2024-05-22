@@ -16,7 +16,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequestMapping("usuarios")
 public class UsuarioController {
-
     private final UsuarioService service;
 
     public UsuarioController(UsuarioService cadastroDeUsuarioService) {
@@ -41,5 +40,19 @@ public class UsuarioController {
     public ResponseEntity<DadosDetalhamentoUsuario> detalhar(@PathVariable Long id) {
         var usuario = service.detalhar(id);
         return ResponseEntity.ok(usuario);
+    }
+
+    @PutMapping("/{id}")
+    @Transactional
+    public ResponseEntity<DadosDetalhamentoUsuario> atualizar(@PathVariable Long id, @RequestBody @Valid DadosCadastroUsuario dados) {
+        var usuarioAtualizado = service.atualizarUsuario(id, dados);
+        return ResponseEntity.ok(usuarioAtualizado);
+    }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        service.deletarUsuario(id);
+        return ResponseEntity.noContent().build();
     }
 }

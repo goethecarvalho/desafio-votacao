@@ -22,10 +22,15 @@ public class Usuario {
     private String nome;
     private String cpf;
 
-    /*@Enumerated(EnumType.STRING)
-    private UsuarioStatus status;*/
+    @Enumerated(EnumType.STRING)
+    private UsuarioStatus usuarioStatus;
 
     public Usuario(DadosCadastroUsuario dados) {
+        this.nome = dados.nome();
+        this.cpf = dados.cpf();
+    }
+
+    public void atualizarDados(DadosCadastroUsuario dados) {
         this.nome = dados.nome();
         this.cpf = dados.cpf();
     }

@@ -1,7 +1,12 @@
 package br.com.dbserver.desafio.votacao.domain.usuarios.vo;
 
-import br.com.dbserver.desafio.votacao.domain.usuarios.entity.Usuario;
+import jakarta.validation.constraints.NotNull;
 
-public record DadosCadastroUsuario(Long id, String nome, String cpf) {
-
+public record DadosCadastroUsuario(
+        Long id,
+        @NotNull(message = "O nome é obrigatório!")
+        String nome,
+        @NotNull(message = "O CPF é obrigatório!")
+        String cpf
+) {
 }
